@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'docker:20.10.16'   // or any Docker-in-Docker image
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    }
     stages {
         stage('Clone') {
             steps {
@@ -8,14 +13,12 @@ pipeline {
         }
         stage('Build Docker Image') {
             steps {
-                script {
-                    docker.build('hello-app')
-                }
+                sh 'docker build -t hello-app .'
             }
         }
         stage('Push to Registry') {
             steps {
-                echo 'Push skipped (use DockerHub if needed)'
+                echo 'Push skipped'
             }
         }
         stage('Deploy to Kubernetes') {
